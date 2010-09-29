@@ -19,6 +19,9 @@ IPACL::IPACL(QWidget *parent)
 	QWidget* drawingWidget = new QWidget;
 	drawingWidget->setMaximumSize(400, 400);
 	drawingWidget->setMinimumSize(400, 400);
+	drawingWidget->setMouseTracking(true);
+	drawingWidget->dumpObjectInfo();
+	QObject::connect(drawingWidget, SIGNAL(mouseReleaseEvent()), this, SLOT(mousePosition()));
 
 	/*
 	 * Create Mouse Position Tracker
@@ -44,10 +47,10 @@ IPACL::IPACL(QWidget *parent)
 	/*
 	 * Create Color Group
 	 */
-	QGroupBox* colorGroup = new QGroupBox(tr("Shape"));
-	QRadioButton* radioRed = new QRadioButton(tr("Circle"));
-	QRadioButton* radioGreen = new QRadioButton(tr("Square"));
-	QRadioButton* radioBlue = new QRadioButton(tr("Triangle"));
+	QGroupBox* colorGroup = new QGroupBox(tr("Color"));
+	QRadioButton* radioRed = new QRadioButton(tr("Red"));
+	QRadioButton* radioGreen = new QRadioButton(tr("Green"));
+	QRadioButton* radioBlue = new QRadioButton(tr("Blue"));
 	QVBoxLayout* wbox = new QVBoxLayout;
 	wbox->addWidget(radioRed);
 	wbox->addWidget(radioGreen);
@@ -87,8 +90,11 @@ void IPACL::createActions() {
 	exitAct = new QAction(tr("Exit"), this);
 	connect(exitAct, SIGNAL(triggered()), this, SLOT(close()));
 	circleAct = new QAction(tr("Circle"), this);
+	connect(circleAct, SIGNAL(triggered()), this, SLOT(setCircle()));
 	squareAct = new QAction(tr("Square"), this);
+	connect(squareAct, SIGNAL(triggered()), this, SLOT(setSquare()));
 	triangleAct = new QAction(tr("Triangle"), this);
+	connect(triangleAct, SIGNAL(triggered()), this, SLOT(setTriangle()));
 	aboutAct = new QAction(tr("About"), this);
 	connect(aboutAct, SIGNAL(triggered()), this, SLOT(about()));
 }
@@ -141,6 +147,19 @@ void IPACL::circle() {
 
 void IPACL::save() {
 	formSaved = true;
+}
+
+void IPACL::setSquare() {
+	//radioSquare->setChecked(true);
+	mousePosLabel->setText("Square");
+}
+
+void IPACL::setTriangle() {
+	mousePosLabel->setText("Triangle");
+}
+
+void IPACL::setCircle() {
+	mousePosLabel->setText("Circle");
 }
 
 void IPACL::open() {

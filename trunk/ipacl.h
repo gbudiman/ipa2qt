@@ -42,6 +42,9 @@ private slots:
 	void square();
 	void about();
 	void mousePosition();
+	void setCircle();
+	void setSquare();
+	void setTriangle();
 
 private:
     // Ui::IPACLClass ui;
@@ -65,8 +68,6 @@ private:
     QAction* aboutAct;
 
 	QWidget* drawingWidget;
-    // Information label - crashed the compiler?
-    //QLabel* infoLabel;
 
 	QLabel* mousePosLabel;
 	QVBoxLayout *layout;
