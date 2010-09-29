@@ -8,5 +8,6 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
     IPACL w;
     w.show();
+    w.setWindowTitle("IPA2::MainWindow");
     return a.exec();
 }

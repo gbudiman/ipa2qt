@@ -9,8 +9,66 @@ IPACL::IPACL(QWidget *parent)
 {
 	//ui.setupUi(this);
 	formSaved = false;
+
+	QWidget *widget = new QWidget;
+	setCentralWidget(widget);
+
+	/*
+	 * Create drawing widget
+	 */
+	QWidget* drawingWidget = new QWidget;
+	drawingWidget->setMaximumSize(400, 400);
+	drawingWidget->setMinimumSize(400, 400);
+
+	/*
+	 * Create Mouse Position Tracker
+	 */
+	QVBoxLayout* layout = new QVBoxLayout;
+	mousePosLabel = new QLabel(tr("Mouse pos here"));
+
+	/*
+	 * Create Shape Group
+	 */
+	QGroupBox* shapeGroup = new QGroupBox(tr("Shape"));
+	QRadioButton* radioCircle = new QRadioButton(tr("Circle"));
+	QRadioButton* radioSquare = new QRadioButton(tr("Square"));
+	QRadioButton* radioTriangle = new QRadioButton(tr("Triangle"));
+	QVBoxLayout* vbox = new QVBoxLayout;
+	vbox->addWidget(radioCircle);
+	vbox->addWidget(radioSquare);
+	vbox->addWidget(radioTriangle);
+	shapeGroup->setLayout(vbox);
+
+	radioCircle->setChecked(true);
+
+	/*
+	 * Create Color Group
+	 */
+	QGroupBox* colorGroup = new QGroupBox(tr("Shape"));
+	QRadioButton* radioRed = new QRadioButton(tr("Circle"));
+	QRadioButton* radioGreen = new QRadioButton(tr("Square"));
+	QRadioButton* radioBlue = new QRadioButton(tr("Triangle"));
+	QVBoxLayout* wbox = new QVBoxLayout;
+	wbox->addWidget(radioRed);
+	wbox->addWidget(radioGreen);
+	wbox->addWidget(radioBlue);
+	colorGroup->setLayout(wbox);
+
+	radioRed->setChecked(true);
+
+	layout->addWidget(drawingWidget);
+	layout->addWidget(mousePosLabel);
+	layout->addWidget(shapeGroup);
+	layout->addWidget(colorGroup);
+	widget->setLayout(layout);
+
+	//setLayout(vbox);
+
 	createActions();
 	createMenus();
+
+	//QPoint t = QCursor::pos();
+	//cout << t.x() << " " << t.y() << endl;
 	resize(600, 480);
 }
 
@@ -50,6 +108,18 @@ void IPACL::createMenus() {
 
 	helpMenu = menuBar()->addMenu(tr("Help"));
 	helpMenu->addAction(aboutAct);
+
+	/*drawingWidget = new QWidget(this);
+	drawingWidget->setGeometry(QRect(10, 10, 400, 400));
+	drawingWidget->setMinimumSize(400, 400);
+	drawingWidget->setMaximumSize(400, 400);
+	QPalette drawingPalette;
+	drawingPalette.setColor(drawingWidget->backgroundRole(), "blue");
+	drawingWidget->setPalette(drawingPalette);*/
+}
+
+void IPACL::mousePosition() {
+	mousePosLabel->setText("gd");
 }
 
 void IPACL::about() {
@@ -74,18 +144,47 @@ void IPACL::save() {
 }
 
 void IPACL::open() {
-	string needSave = "Do you want to save the changes to this document before closing?<br /><br />If you don't save, your changes will be lost.";
-
 	if (formSaved) {
 		QString directory = QFileDialog::getExistingDirectory(this, tr("Open Form"), QDir::currentPath());
 	}
 	else {
-		//QMessageBox::QMessageBox(this, needSave, QMessageBox::Close, QMessageBox::Cancel, QMessageBox::Save);
+		QMessageBox askToSave;
+		askToSave.setWindowTitle("Save Form?");
+		askToSave.setIcon(QMessageBox::Information);
+		askToSave.setText("Do you want to save the changes to this document before closing?");
+		askToSave.setInformativeText("If you don't save, your changes will be lost.");
+		askToSave.setStandardButtons(QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
+		askToSave.setDefaultButton(QMessageBox::Save);
+		int openRet = askToSave.exec();
+
+		switch (openRet) {
+		case QMessageBox::Save: cout << "Save clicked" << endl; break;
+		case QMessageBox::Discard: cout << "Discard" << endl; break;
+		case QMessageBox::Cancel: cout << "Cancel clicked" << endl; break;
+		}
 	}
 }
 
 void IPACL::newFile() {
-	//QMessageBox::QMessageBox(this, "Form saved", "Form saved", QMessageBox::Ok, QMessageBox::Ignore, QMessageBox::Ignore);
+	if (formSaved) {
+		// Create new blank widget
+	}
+	else {
+		QMessageBox askToSave;
+		askToSave.setWindowTitle("Save Form?");
+		askToSave.setIcon(QMessageBox::Information);
+		askToSave.setText("Do you want to save the changes to this document before closing?");
+		askToSave.setInformativeText("If you don't save, your changes will be lost.");
+		askToSave.setStandardButtons(QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
+		askToSave.setDefaultButton(QMessageBox::Save);
+		int newRet = askToSave.exec();
+
+		switch (newRet) {
+		case QMessageBox::Save: cout << "Save clicked" << endl; break;
+		case QMessageBox::Discard: cout << "Discard" << endl; break;
+		case QMessageBox::Cancel: cout << "Cancel clicked" << endl; break;
+		}
+	}
 }
 
 void IPACL::close() {
