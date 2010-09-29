@@ -18,6 +18,10 @@
 class QAction;
 class QLabel;
 class QMenu;
+class QGroupBox;
+class QLabel;
+class QVBoxLayout;
+class QWidget;
 
 class IPACL : public QMainWindow
 {
@@ -37,11 +41,14 @@ private slots:
 	void triangle();
 	void square();
 	void about();
+	void mousePosition();
 
 private:
     // Ui::IPACLClass ui;
     void createActions();
     void createMenus();
+
+    QWidget *widget;
 
     QMenu* fileMenu;
     QMenu* shapeMenu;
@@ -57,9 +64,12 @@ private:
 
     QAction* aboutAct;
 
+	QWidget* drawingWidget;
     // Information label - crashed the compiler?
     //QLabel* infoLabel;
 
+	QLabel* mousePosLabel;
+	QVBoxLayout *layout;
 };
 
 #endif // IPACL_H
