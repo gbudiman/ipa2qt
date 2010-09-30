@@ -14,6 +14,9 @@
 #include <QtGui/QRadioButton>
 #include <QtGui/QStatusBar>
 #include <QtGui/QWidget>
+#include <QtGui/QBrush>
+#include <QtGui/QPen>
+#include <QtGui/QPixmap>
 
 class QAction;
 class QLabel;
@@ -22,6 +25,26 @@ class QGroupBox;
 class QLabel;
 class QVBoxLayout;
 class QWidget;
+class QBrush;
+class QPen;
+class QPixmap;
+
+class dw : public QWidget {
+	Q_OBJECT
+
+public:
+	dw(QWidget* parent = 0);
+	int mousePosX;
+	int mousePosY;
+
+signals:
+	void mouseMoved(int x, int y);
+
+protected:
+	void leaveEvent(QEvent* event);
+	void enterEvent(QEvent* event);
+	void mouseMoveEvent(QMouseEvent* event);
+};
 
 class IPACL : public QMainWindow
 {
@@ -31,6 +54,9 @@ public:
     IPACL(QWidget *parent = 0);
     ~IPACL();
     bool formSaved;
+    QLabel* mousePosLabel;
+    QLabel* shapeLabel;
+    QLabel* colorLabel;
 
 private slots:
 	void newFile();
@@ -45,6 +71,17 @@ private slots:
 	void setCircle();
 	void setSquare();
 	void setTriangle();
+	void radioSetRed();
+	void radioSetGreen();
+	void radioSetBlue();
+	void radioSetSquare();
+	void radioSetCircle();
+	void radioSetTriangle();
+	void getMouseLocation(int x, int y);
+
+protected:
+	void paintEvent(QPaintEvent* event);
+	void leaveEvent(QEvent* event);
 
 private:
     // Ui::IPACLClass ui;
@@ -68,9 +105,14 @@ private:
     QAction* aboutAct;
 
 	QWidget* drawingWidget;
+	QPainter* painter;
 
-	QLabel* mousePosLabel;
 	QVBoxLayout *layout;
+
+	QPen pen;
+	QBrush brush;
+	QPixmap pixmap;
+	QRect rect;
 };
 
 #endif // IPACL_H

@@ -2,6 +2,7 @@
 #include "ipacl.h"
 #include <iostream>
 #include <string>
+#include <sstream>
 using namespace std;
 
 IPACL::IPACL(QWidget *parent)
@@ -16,26 +17,36 @@ IPACL::IPACL(QWidget *parent)
 	/*
 	 * Create drawing widget
 	 */
-	QWidget* drawingWidget = new QWidget;
+	dw* drawingWidget = new dw;
 	drawingWidget->setMaximumSize(400, 400);
 	drawingWidget->setMinimumSize(400, 400);
 	drawingWidget->setMouseTracking(true);
-	drawingWidget->dumpObjectInfo();
-	QObject::connect(drawingWidget, SIGNAL(mouseReleaseEvent()), this, SLOT(mousePosition()));
+	connect(drawingWidget, SIGNAL(mouseMoved(int, int)), this, SLOT(getMouseLocation(int, int)));
+	/*QPainter painter(drawingWidget);
+	painter.setPen(pen);
+	painter.setBrush(brush);
+	QRect rect(10,20,80,60);
+	painter.drawRect(rect);
+	painter.setWindow(10, 10, 400, 400);*/
 
 	/*
 	 * Create Mouse Position Tracker
 	 */
 	QVBoxLayout* layout = new QVBoxLayout;
 	mousePosLabel = new QLabel(tr("Mouse pos here"));
+	shapeLabel = new QLabel(tr("Shape to draw"));
+	colorLabel = new QLabel(tr("Color to draw"));
 
 	/*
 	 * Create Shape Group
 	 */
 	QGroupBox* shapeGroup = new QGroupBox(tr("Shape"));
 	QRadioButton* radioCircle = new QRadioButton(tr("Circle"));
+	connect(radioCircle, SIGNAL(clicked()), this, SLOT(radioSetCircle()));
 	QRadioButton* radioSquare = new QRadioButton(tr("Square"));
+	connect(radioSquare, SIGNAL(clicked()), this, SLOT(radioSetSquare()));
 	QRadioButton* radioTriangle = new QRadioButton(tr("Triangle"));
+	connect(radioTriangle, SIGNAL(clicked()), this, SLOT(radioSetTriangle()));
 	QVBoxLayout* vbox = new QVBoxLayout;
 	vbox->addWidget(radioCircle);
 	vbox->addWidget(radioSquare);
@@ -49,8 +60,11 @@ IPACL::IPACL(QWidget *parent)
 	 */
 	QGroupBox* colorGroup = new QGroupBox(tr("Color"));
 	QRadioButton* radioRed = new QRadioButton(tr("Red"));
+	connect(radioRed, SIGNAL(clicked()), this, SLOT(radioSetRed()));
 	QRadioButton* radioGreen = new QRadioButton(tr("Green"));
+	connect(radioGreen, SIGNAL(clicked()), this, SLOT(radioSetGreen()));
 	QRadioButton* radioBlue = new QRadioButton(tr("Blue"));
+	connect(radioBlue, SIGNAL(clicked()), this, SLOT(radioSetBlue()));
 	QVBoxLayout* wbox = new QVBoxLayout;
 	wbox->addWidget(radioRed);
 	wbox->addWidget(radioGreen);
@@ -61,6 +75,8 @@ IPACL::IPACL(QWidget *parent)
 
 	layout->addWidget(drawingWidget);
 	layout->addWidget(mousePosLabel);
+	layout->addWidget(shapeLabel);
+	layout->addWidget(colorLabel);
 	layout->addWidget(shapeGroup);
 	layout->addWidget(colorGroup);
 	widget->setLayout(layout);
@@ -78,6 +94,46 @@ IPACL::IPACL(QWidget *parent)
 IPACL::~IPACL()
 {
 
+}
+
+dw::dw(QWidget* parent) : QWidget(parent) {
+	setMouseTracking(true);
+}
+
+void dw::leaveEvent(QEvent* event) {
+}
+
+void dw::enterEvent(QEvent* event) {
+}
+
+void dw::mouseMoveEvent(QMouseEvent* event) {
+	//cout << event->x() << ", " << event->y() << endl;
+	mousePosX = event->x();
+	mousePosY = event->y();
+	emit mouseMoved(mousePosX, mousePosY);
+	//mousePosLabel->setText("haf");
+}
+
+void IPACL::getMouseLocation(int x, int y) {
+	//cout << x << ", " << y << endl;
+	//stringstream s;
+	//s << x << ", " << y;
+	char s [50];
+	sprintf(s, "%d, %d", x, y);
+	QString qs(s);
+
+	mousePosLabel->setText(qs);
+}
+
+void IPACL::leaveEvent(QEvent* event) {
+	//cout << "L" << endl;
+}
+
+void IPACL::paintEvent(QPaintEvent*) {
+	QPainter painter(this);
+	painter.setPen(Qt::NoPen);
+	painter.setBrush(Qt::green);
+	painter.drawRect(QRect(120,120,40,40));
 }
 
 void IPACL::createActions() {
@@ -145,21 +201,45 @@ void IPACL::circle() {
 
 }
 
+void IPACL::radioSetRed() {
+	colorLabel->setText("red");
+}
+
+void IPACL::radioSetGreen() {
+	colorLabel->setText("green");
+}
+
+void IPACL::radioSetBlue() {
+	colorLabel->setText("blue");
+}
+
+void IPACL::radioSetSquare() {
+	shapeLabel->setText("square");
+}
+
+void IPACL::radioSetTriangle() {
+	shapeLabel->setText("triangle");
+}
+
+void IPACL::radioSetCircle() {
+	shapeLabel->setText("circle");
+}
+
 void IPACL::save() {
 	formSaved = true;
 }
 
 void IPACL::setSquare() {
 	//radioSquare->setChecked(true);
-	mousePosLabel->setText("Square");
+	shapeLabel->setText("menu::Square");
 }
 
 void IPACL::setTriangle() {
-	mousePosLabel->setText("Triangle");
+	shapeLabel->setText("menu::Triangle");
 }
 
 void IPACL::setCircle() {
-	mousePosLabel->setText("Circle");
+	shapeLabel->setText("menu::Circle");
 }
 
 void IPACL::open() {
