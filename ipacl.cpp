@@ -24,6 +24,7 @@ IPACL::IPACL(QWidget *parent)
 	connect(drawingWidget, SIGNAL(mouseMoved(int, int)), this, SLOT(getMouseLocation(int, int)));
 	connect(drawingWidget, SIGNAL(mouseFollow(int, int)), this, SLOT(update()));
 	connect(drawingWidget, SIGNAL(mouseClicked(int, int)), drawingWidget, SLOT(fixPaint(int, int)));
+	connect(drawingWidget, SIGNAL(mouseLeaving()), drawingWidget, SLOT(update()));
 	/*QPainter painter(drawingWidget);
 	painter.setPen(pen);
 	painter.setBrush(brush);
