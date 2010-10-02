@@ -36,14 +36,29 @@ public:
 	dw(QWidget* parent = 0);
 	int mousePosX;
 	int mousePosY;
+	int shape;
+	int color;
 
 signals:
 	void mouseMoved(int x, int y);
+	void mouseClicked(int x, int y);
+	void mouseFollow(int x, int y);
 
 protected:
 	void leaveEvent(QEvent* event);
 	void enterEvent(QEvent* event);
 	void mouseMoveEvent(QMouseEvent* event);
+	void mousePressEvent(QMouseEvent* event);
+	void paintEvent(QPaintEvent* event);
+
+private slots:
+	void setToCircle();
+	void setToTriangle();
+	void setToSquare();
+	void setToRed();
+	void setToBlue();
+	void setToGreen();
+	void fixPaint(int, int);
 };
 
 class IPACL : public QMainWindow
@@ -57,6 +72,8 @@ public:
     QLabel* mousePosLabel;
     QLabel* shapeLabel;
     QLabel* colorLabel;
+    char* mainShape;
+    char* mainColor;
 
 private slots:
 	void newFile();
@@ -78,9 +95,13 @@ private slots:
 	void radioSetCircle();
 	void radioSetTriangle();
 	void getMouseLocation(int x, int y);
+	void draw(int x, int y);
+
+signals:
+	void shapeChanged(int s);
 
 protected:
-	void paintEvent(QPaintEvent* event);
+	//void paintEvent(QPaintEvent* event);
 	void leaveEvent(QEvent* event);
 
 private:
