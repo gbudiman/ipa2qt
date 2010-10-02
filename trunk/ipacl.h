@@ -38,11 +38,13 @@ public:
 	int mousePosY;
 	int shape;
 	int color;
+	int onWidget;
 
 signals:
 	void mouseMoved(int x, int y);
 	void mouseClicked(int x, int y);
 	void mouseFollow(int x, int y);
+	void mouseLeaving();
 
 protected:
 	void leaveEvent(QEvent* event);
