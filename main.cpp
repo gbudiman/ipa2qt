@@ -94,14 +94,7 @@ void dw::fixPaint(int x, int y) {
 	/*for (int i = 0; i < shapeContainer.size(); i++) {
 		cout << shapeContainer.at(i).x << shapeContainer.at(i).y << shapeContainer.at(i).shape << shapeContainer.at(i).color << endl;
 	}*/
-	/*QPixmap pixmap(400, 400);
-	QPainter p;
-	p.begin(&pixmap);
-	p.setPen(Qt::NoPen);
-	p.setBrush(Qt::red);
-	p.drawEllipse(x-30,y-30,60,60);
-	p.end();
-	p.save();*/
+
 }
 
 void dw::setToSquare() {
@@ -131,15 +124,17 @@ void dw::setToRed() {
 void dw::save() {
 	ofstream f;
 	QString filename = QFileDialog::getSaveFileName(this, tr("Save Form"), QDir::currentPath());
-	f.open(filename.toLocal8Bit());
-	for (int i = 0; i < shapeContainer.size(); i++) {
-		f << shapeContainer.at(i).x << " ";
-		f << shapeContainer.at(i).y << " ";
-		f << shapeContainer.at(i).shape << " ";
-		f << shapeContainer.at(i).color << "\n";
+	if (filename != "") {
+		f.open(filename.toLocal8Bit());
+		for (int i = 0; i < shapeContainer.size(); i++) {
+			f << shapeContainer.at(i).x << " ";
+			f << shapeContainer.at(i).y << " ";
+			f << shapeContainer.at(i).shape << " ";
+			f << shapeContainer.at(i).color << "\n";
+		}
+		f.close();
+		formSaved = true;
 	}
-	f.close();
-	formSaved = true;
 }
 
 void dw::readFile(QString fileToRead) {
@@ -169,6 +164,7 @@ void dw::readFile(QString fileToRead) {
 			}
 		}
 	}
+	update();
 }
 
 void dw::open() {
@@ -187,8 +183,15 @@ void dw::open() {
 		int openRet = askToSave.exec();
 
 		switch (openRet) {
-		case QMessageBox::Save: save(); readFile(QFileDialog::getOpenFileName(this, tr("Open Form"), QDir::currentPath())); formSaved = true; break;
-		case QMessageBox::Discard: shapeContainer.clear(); readFile(QFileDialog::getOpenFileName(this, tr("Open Form"), QDir::currentPath())); update(); break;
+		case QMessageBox::Save: save();
+								readFile(QFileDialog::getOpenFileName(this, tr("Open Form"), QDir::currentPath()));
+								formSaved = true;
+								break;
+		case QMessageBox::Discard: shapeContainer.clear();
+									update();
+									readFile(QFileDialog::getOpenFileName(this, tr("Open Form"), QDir::currentPath()));
+									formSaved = true;
+									break;
 		case QMessageBox::Cancel: break;
 		}
 	}
@@ -197,6 +200,7 @@ void dw::open() {
 void dw::newFile() {
 	if (formSaved) {
 		shapeContainer.clear();
+		update();
 	}
 	else {
 		QMessageBox askToSave;
@@ -209,8 +213,13 @@ void dw::newFile() {
 		int newRet = askToSave.exec();
 
 		switch (newRet) {
-		case QMessageBox::Save: save(); formSaved = true; break;
-		case QMessageBox::Discard: shapeContainer.clear(); update(); break;
+		case QMessageBox::Save: save();
+								formSaved = true;
+								break;
+		case QMessageBox::Discard: shapeContainer.clear();
+									update();
+									formSaved = true;
+									break;
 		case QMessageBox::Cancel: break;
 		}
 	}
