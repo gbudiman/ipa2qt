@@ -17,6 +17,8 @@
 #include <QtGui/QBrush>
 #include <QtGui/QPen>
 #include <QtGui/QPixmap>
+#include <QList>
+#include "ipaShape.h"
 
 class QAction;
 class QLabel;
@@ -28,6 +30,7 @@ class QWidget;
 class QBrush;
 class QPen;
 class QPixmap;
+class ipaShape;
 
 class dw : public QWidget {
 	Q_OBJECT
@@ -39,6 +42,9 @@ public:
 	int shape;
 	int color;
 	int onWidget;
+	QList<ipaShape> shapeContainer;
+	bool formSaved;
+	void readFile(QString string);
 
 signals:
 	void mouseMoved(int x, int y);
@@ -54,6 +60,10 @@ protected:
 	void paintEvent(QPaintEvent* event);
 
 private slots:
+	void newFile();
+	void open();
+	void save();
+	void close();
 	void setToCircle();
 	void setToTriangle();
 	void setToSquare();
@@ -78,10 +88,6 @@ public:
     char* mainColor;
 
 private slots:
-	void newFile();
-	void open();
-	void save();
-	void close();
 	void circle();
 	void triangle();
 	void square();
