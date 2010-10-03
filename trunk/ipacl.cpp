@@ -29,7 +29,7 @@ IPACL::IPACL(QWidget *parent)
 	 * Create Mouse Position Tracker
 	 */
 	QHBoxLayout* layout = new QHBoxLayout;
-	mousePosLabel = new QLabel(tr("Mouse pos here"));
+	mousePosLabel = new QLabel(tr("(?, ?)"));
 
 	QGroupBox* mGroup = new QGroupBox();
 	QVBoxLayout* mbox = new QVBoxLayout;
@@ -110,7 +110,7 @@ IPACL::~IPACL()
 }
 
 void IPACL::draw(int x, int y) {
-	cout << "Will draw at " << x << ", " << y << endl;
+	//cout << "Will draw at " << x << ", " << y << endl;
 }
 
 void IPACL::getMouseLocation(int x, int y) {
@@ -118,7 +118,7 @@ void IPACL::getMouseLocation(int x, int y) {
 	//stringstream s;
 	//s << x << ", " << y;
 	char s [50];
-	sprintf(s, "%d, %d", x, y);
+	sprintf(s, "(%d, %d)", x, y);
 	QString qs(s);
 
 	mousePosLabel->setText(qs);
