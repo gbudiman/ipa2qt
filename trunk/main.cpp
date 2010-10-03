@@ -1,12 +1,16 @@
 #include "ipacl.h"
 #include "ipaShape.h"
 
-#include <string>
+#include <stdio.h>
+#include <string.h>
+#include <algorithm>
 #include <iostream>
 #include <fstream>
 #include <QtGui>
 #include <QApplication>
 #include <QList>
+#include <vector>
+#include <sstream>
 using namespace std;
 
 dw::dw(QWidget* parent) : QWidget(parent) {
@@ -129,9 +133,9 @@ void dw::save() {
 	QString filename = QFileDialog::getSaveFileName(this, tr("Save Form"), QDir::currentPath());
 	f.open(filename.toLocal8Bit());
 	for (int i = 0; i < shapeContainer.size(); i++) {
-		f << shapeContainer.at(i).x << ", ";
-		f << shapeContainer.at(i).y << ", ";
-		f << shapeContainer.at(i).shape << ", ";
+		f << shapeContainer.at(i).x << " ";
+		f << shapeContainer.at(i).y << " ";
+		f << shapeContainer.at(i).shape << " ";
 		f << shapeContainer.at(i).color << "\n";
 	}
 	f.close();
@@ -141,11 +145,28 @@ void dw::save() {
 void dw::readFile(QString fileToRead) {
 	string line;
 	shapeContainer.clear();
+	int dataX;
+	int dataY;
+	int dataShape;
+	int dataColor;
+
+	string dummy;
 	ifstream myfile(fileToRead.toLocal8Bit());
 	if (myfile.is_open()) {
 		while (!myfile.eof()) {
 			getline(myfile, line);
-			cout << line << endl;
+			//cout << line << endl;
+			if (!myfile.eof()) {
+				stringstream ss(line);
+
+				ss >> dataX;
+				ss >> dataY;
+				ss >> dataShape;
+				ss >> dataColor;
+				//cout << dataX << " " << dataY << " " << dataShape << " " << dataColor << endl;
+				ipaShape ds(dataX, dataY, dataShape, dataColor);
+				shapeContainer.append(ds);
+			}
 		}
 	}
 }
@@ -166,8 +187,8 @@ void dw::open() {
 		int openRet = askToSave.exec();
 
 		switch (openRet) {
-		case QMessageBox::Save: save(); readFile(QFileDialog::getOpenFileName(this, tr("Open Form"), QDir::currentPath())); break;
-		case QMessageBox::Discard: cout << "Discard" << endl; break;
+		case QMessageBox::Save: save(); readFile(QFileDialog::getOpenFileName(this, tr("Open Form"), QDir::currentPath())); formSaved = true; break;
+		case QMessageBox::Discard: shapeContainer.clear(); readFile(QFileDialog::getOpenFileName(this, tr("Open Form"), QDir::currentPath())); update(); break;
 		case QMessageBox::Cancel: break;
 		}
 	}
@@ -175,7 +196,7 @@ void dw::open() {
 
 void dw::newFile() {
 	if (formSaved) {
-		// Create new blank widget
+		shapeContainer.clear();
 	}
 	else {
 		QMessageBox askToSave;
@@ -188,9 +209,9 @@ void dw::newFile() {
 		int newRet = askToSave.exec();
 
 		switch (newRet) {
-		case QMessageBox::Save: cout << "Save clicked" << endl; break;
-		case QMessageBox::Discard: cout << "Discard" << endl; break;
-		case QMessageBox::Cancel: cout << "Cancel clicked" << endl; break;
+		case QMessageBox::Save: save(); formSaved = true; break;
+		case QMessageBox::Discard: shapeContainer.clear(); update(); break;
+		case QMessageBox::Cancel: break;
 		}
 	}
 }
