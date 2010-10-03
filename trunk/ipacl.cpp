@@ -8,7 +8,6 @@ using namespace std;
 IPACL::IPACL(QWidget *parent)
     : QMainWindow(parent)
 {
-	//ui.setupUi(this);
 	formSaved = false;
 
 	QWidget *widget = new QWidget;
@@ -25,12 +24,6 @@ IPACL::IPACL(QWidget *parent)
 	connect(drawingWidget, SIGNAL(mouseFollow(int, int)), this, SLOT(update()));
 	connect(drawingWidget, SIGNAL(mouseClicked(int, int)), drawingWidget, SLOT(fixPaint(int, int)));
 	connect(drawingWidget, SIGNAL(mouseLeaving()), drawingWidget, SLOT(update()));
-	/*QPainter painter(drawingWidget);
-	painter.setPen(pen);
-	painter.setBrush(brush);
-	QRect rect(10,20,80,60);
-	painter.drawRect(rect);
-	painter.setWindow(10, 10, 400, 400);*/
 
 	/*
 	 * Create Mouse Position Tracker
@@ -96,8 +89,11 @@ IPACL::IPACL(QWidget *parent)
 	createMenus();
 
 	connect(circleAct, SIGNAL(triggered()), drawingWidget, SLOT(setToCircle()));
+	connect(circleAct, SIGNAL(triggered()), radioCircle, SLOT(click()));
 	connect(squareAct, SIGNAL(triggered()), drawingWidget, SLOT(setToSquare()));
+	connect(squareAct, SIGNAL(triggered()), radioSquare, SLOT(click()));
 	connect(triangleAct, SIGNAL(triggered()), drawingWidget, SLOT(setToTriangle()));
+	connect(triangleAct, SIGNAL(triggered()), radioTriangle, SLOT(click()));
 
 	connect(newAct, SIGNAL(triggered()), drawingWidget, SLOT(newFile()));
 	connect(openAct, SIGNAL(triggered()), drawingWidget, SLOT(open()));
@@ -133,19 +129,12 @@ void IPACL::leaveEvent(QEvent* event) {
 
 void IPACL::createActions() {
 	newAct = new QAction(tr("New"), this);
-	//connect(newAct, SIGNAL(triggered()), this, SLOT(newFile()));
 	openAct = new QAction(tr("Open"), this);
-	//connect(openAct, SIGNAL(triggered()), this, SLOT(open()));
 	saveAct = new QAction(tr("Save"), this);
-	//connect(saveAct, SIGNAL(triggered()), this, SLOT(save()));
 	exitAct = new QAction(tr("Exit"), this);
-	//connect(exitAct, SIGNAL(triggered()), this, SLOT(close()));
 	circleAct = new QAction(tr("Circle"), this);
-	//connect(circleAct, SIGNAL(triggered()), this, SLOT(setCircle()));
 	squareAct = new QAction(tr("Square"), this);
-	//connect(squareAct, SIGNAL(triggered()), this, SLOT(setSquare()));
 	triangleAct = new QAction(tr("Triangle"), this);
-	//connect(triangleAct, SIGNAL(triggered()), this, SLOT(setTriangle()));
 	aboutAct = new QAction(tr("About"), this);
 	connect(aboutAct, SIGNAL(triggered()), this, SLOT(about()));
 }
@@ -165,14 +154,6 @@ void IPACL::createMenus() {
 
 	helpMenu = menuBar()->addMenu(tr("Help"));
 	helpMenu->addAction(aboutAct);
-
-	/*drawingWidget = new QWidget(this);
-	drawingWidget->setGeometry(QRect(10, 10, 400, 400));
-	drawingWidget->setMinimumSize(400, 400);
-	drawingWidget->setMaximumSize(400, 400);
-	QPalette drawingPalette;
-	drawingPalette.setColor(drawingWidget->backgroundRole(), "blue");
-	drawingWidget->setPalette(drawingPalette);*/
 }
 
 void IPACL::mousePosition() {
