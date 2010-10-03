@@ -35,9 +35,11 @@ IPACL::IPACL(QWidget *parent)
 	/*
 	 * Create Mouse Position Tracker
 	 */
-	QVBoxLayout* layout = new QVBoxLayout;
+	QHBoxLayout* layout = new QHBoxLayout;
 	mousePosLabel = new QLabel(tr("Mouse pos here"));
 
+	QGroupBox* mGroup = new QGroupBox();
+	QVBoxLayout* mbox = new QVBoxLayout;
 	/*
 	 * Create Shape Group
 	 */
@@ -81,9 +83,11 @@ IPACL::IPACL(QWidget *parent)
 	radioRed->setChecked(true);
 
 	layout->addWidget(drawingWidget);
-	layout->addWidget(mousePosLabel);
-	layout->addWidget(shapeGroup);
-	layout->addWidget(colorGroup);
+	mbox->addWidget(mousePosLabel);
+	mbox->addWidget(shapeGroup);
+	mbox->addWidget(colorGroup);
+	mGroup->setLayout(mbox);
+	layout->addWidget(mGroup);
 	widget->setLayout(layout);
 
 	//setLayout(vbox);
