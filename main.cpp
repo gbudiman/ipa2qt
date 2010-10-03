@@ -1,9 +1,12 @@
 #include "ipacl.h"
+#include "ipaShape.h"
 
 #include <string>
 #include <iostream>
+#include <fstream>
 #include <QtGui>
 #include <QApplication>
+#include <QList>
 using namespace std;
 
 dw::dw(QWidget* parent) : QWidget(parent) {
@@ -12,6 +15,8 @@ dw::dw(QWidget* parent) : QWidget(parent) {
 	color = 0;
 	onWidget = 0;
 	setAttribute(Qt::WA_PaintOutsidePaintEvent,true);
+	formSaved = true;
+	QList<ipaShape> shapeContainer;
 }
 
 void dw::leaveEvent(QEvent* event) {
@@ -38,10 +43,26 @@ void dw::mousePressEvent(QMouseEvent* event) {
 
 void dw::paintEvent(QPaintEvent* event) {
 	//cout << "invoked at " << mousePosX << ", " << mousePosY << " " << shape << ", " << color << endl;
+	QPainter painter(this);
+
+	for (int i = 0; i < shapeContainer.size(); i++) {
+		switch (shapeContainer.at(i).color) {
+		case 0: painter.setBrush(Qt::red); break;
+		case 1: painter.setBrush(Qt::green); break;
+		default: painter.setBrush(Qt::blue);
+		}
+		switch (shapeContainer.at(i).shape) {
+		case 0: painter.drawEllipse(shapeContainer.at(i).x-30,shapeContainer.at(i).y-30,60,60); break;
+		case 1: painter.drawRect(QRect(shapeContainer.at(i).x - 30,shapeContainer.at(i).y - 30,60,60)); break;
+		default: QVector<QPoint> polyPoints;
+			polyPoints << QPoint(shapeContainer.at(i).x-30, shapeContainer.at(i).y+26)
+					<< QPoint(shapeContainer.at(i).x, shapeContainer.at(i).y-26)
+					<< QPoint(shapeContainer.at(i).x+30, shapeContainer.at(i).y+26);
+			painter.drawPolygon(polyPoints);
+		}
+	}
 
 	if (onWidget == 1) {
-		QPainter painter(this);
-		painter.setPen(Qt::NoPen);
 		switch (color) {
 		case 0: painter.setBrush(Qt::red); break;
 		case 1: painter.setBrush(Qt::green); break;
@@ -56,16 +77,19 @@ void dw::paintEvent(QPaintEvent* event) {
 		}
 	}
 	else {
-		QPainter painter(this);
-		painter.setPen(Qt::NoPen);
 		painter.setBrush(Qt::transparent);
 		painter.drawEllipse(900, 900, 1, 1);
 	}
 }
 
 void dw::fixPaint(int x, int y) {
-	cout << "clicked at " << x << ", " << y << endl;
+	ipaShape ds(x, y, shape, color);
+	shapeContainer.append(ds);
+	formSaved = false;
 
+	/*for (int i = 0; i < shapeContainer.size(); i++) {
+		cout << shapeContainer.at(i).x << shapeContainer.at(i).y << shapeContainer.at(i).shape << shapeContainer.at(i).color << endl;
+	}*/
 	/*QPixmap pixmap(400, 400);
 	QPainter p;
 	p.begin(&pixmap);
@@ -98,6 +122,98 @@ void dw::setToGreen() {
 
 void dw::setToRed() {
 	color = 0;
+}
+
+void dw::save() {
+	ofstream f;
+	QString filename = QFileDialog::getSaveFileName(this, tr("Save Form"), QDir::currentPath());
+	f.open(filename.toLocal8Bit());
+	for (int i = 0; i < shapeContainer.size(); i++) {
+		f << shapeContainer.at(i).x << ", ";
+		f << shapeContainer.at(i).y << ", ";
+		f << shapeContainer.at(i).shape << ", ";
+		f << shapeContainer.at(i).color << "\n";
+	}
+	f.close();
+	formSaved = true;
+}
+
+void dw::readFile(QString fileToRead) {
+	string line;
+	shapeContainer.clear();
+	ifstream myfile(fileToRead.toLocal8Bit());
+	if (myfile.is_open()) {
+		while (!myfile.eof()) {
+			getline(myfile, line);
+			cout << line << endl;
+		}
+	}
+}
+
+void dw::open() {
+	if (formSaved) {
+		QString rFile = QFileDialog::getOpenFileName(this, tr("Open Form"), QDir::currentPath());
+		readFile(rFile);
+	}
+	else {
+		QMessageBox askToSave;
+		askToSave.setWindowTitle("Save Form?");
+		askToSave.setIcon(QMessageBox::Information);
+		askToSave.setText("Do you want to save the changes to this document before closing?");
+		askToSave.setInformativeText("If you don't save, your changes will be lost.");
+		askToSave.setStandardButtons(QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
+		askToSave.setDefaultButton(QMessageBox::Save);
+		int openRet = askToSave.exec();
+
+		switch (openRet) {
+		case QMessageBox::Save: save(); readFile(QFileDialog::getOpenFileName(this, tr("Open Form"), QDir::currentPath())); break;
+		case QMessageBox::Discard: cout << "Discard" << endl; break;
+		case QMessageBox::Cancel: break;
+		}
+	}
+}
+
+void dw::newFile() {
+	if (formSaved) {
+		// Create new blank widget
+	}
+	else {
+		QMessageBox askToSave;
+		askToSave.setWindowTitle("Save Form?");
+		askToSave.setIcon(QMessageBox::Information);
+		askToSave.setText("Do you want to save the changes to this document before closing?");
+		askToSave.setInformativeText("If you don't save, your changes will be lost.");
+		askToSave.setStandardButtons(QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
+		askToSave.setDefaultButton(QMessageBox::Save);
+		int newRet = askToSave.exec();
+
+		switch (newRet) {
+		case QMessageBox::Save: cout << "Save clicked" << endl; break;
+		case QMessageBox::Discard: cout << "Discard" << endl; break;
+		case QMessageBox::Cancel: cout << "Cancel clicked" << endl; break;
+		}
+	}
+}
+
+void dw::close() {
+	if (formSaved) {
+		qApp->exit(0);
+	}
+	else {
+		QMessageBox askToSave;
+		askToSave.setWindowTitle("Exit Designer?");
+		askToSave.setIcon(QMessageBox::Information);
+		askToSave.setText("Do you want to save the changes to this document before closing?");
+		askToSave.setInformativeText("If you don't save, your changes will be lost.");
+		askToSave.setStandardButtons(QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
+		askToSave.setDefaultButton(QMessageBox::Save);
+		int exitRet = askToSave.exec();
+
+		switch (exitRet) {
+		case QMessageBox::Discard: qApp->exit(0); break;
+		case QMessageBox::Save: save(); qApp->exit(0); break;
+		}
+	}
 }
 
 int main(int argc, char *argv[])

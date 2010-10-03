@@ -94,6 +94,11 @@ IPACL::IPACL(QWidget *parent)
 	connect(circleAct, SIGNAL(triggered()), drawingWidget, SLOT(setToCircle()));
 	connect(squareAct, SIGNAL(triggered()), drawingWidget, SLOT(setToSquare()));
 	connect(triangleAct, SIGNAL(triggered()), drawingWidget, SLOT(setToTriangle()));
+
+	connect(newAct, SIGNAL(triggered()), drawingWidget, SLOT(newFile()));
+	connect(openAct, SIGNAL(triggered()), drawingWidget, SLOT(open()));
+	connect(exitAct, SIGNAL(triggered()), drawingWidget, SLOT(close()));
+	connect(saveAct, SIGNAL(triggered()), drawingWidget, SLOT(save()));
 	//QPoint t = QCursor::pos();
 	//cout << t.x() << " " << t.y() << endl;
 	resize(600, 480);
@@ -124,13 +129,13 @@ void IPACL::leaveEvent(QEvent* event) {
 
 void IPACL::createActions() {
 	newAct = new QAction(tr("New"), this);
-	connect(newAct, SIGNAL(triggered()), this, SLOT(newFile()));
+	//connect(newAct, SIGNAL(triggered()), this, SLOT(newFile()));
 	openAct = new QAction(tr("Open"), this);
-	connect(openAct, SIGNAL(triggered()), this, SLOT(open()));
+	//connect(openAct, SIGNAL(triggered()), this, SLOT(open()));
 	saveAct = new QAction(tr("Save"), this);
-	connect(saveAct, SIGNAL(triggered()), this, SLOT(save()));
+	//connect(saveAct, SIGNAL(triggered()), this, SLOT(save()));
 	exitAct = new QAction(tr("Exit"), this);
-	connect(exitAct, SIGNAL(triggered()), this, SLOT(close()));
+	//connect(exitAct, SIGNAL(triggered()), this, SLOT(close()));
 	circleAct = new QAction(tr("Circle"), this);
 	//connect(circleAct, SIGNAL(triggered()), this, SLOT(setCircle()));
 	squareAct = new QAction(tr("Square"), this);
@@ -204,10 +209,6 @@ void IPACL::radioSetTriangle() {
 void IPACL::radioSetCircle() {
 }
 
-void IPACL::save() {
-	formSaved = true;
-}
-
 void IPACL::setSquare() {
 }
 
@@ -215,52 +216,4 @@ void IPACL::setTriangle() {
 }
 
 void IPACL::setCircle() {
-}
-
-void IPACL::open() {
-	if (formSaved) {
-		QString directory = QFileDialog::getExistingDirectory(this, tr("Open Form"), QDir::currentPath());
-	}
-	else {
-		QMessageBox askToSave;
-		askToSave.setWindowTitle("Save Form?");
-		askToSave.setIcon(QMessageBox::Information);
-		askToSave.setText("Do you want to save the changes to this document before closing?");
-		askToSave.setInformativeText("If you don't save, your changes will be lost.");
-		askToSave.setStandardButtons(QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
-		askToSave.setDefaultButton(QMessageBox::Save);
-		int openRet = askToSave.exec();
-
-		switch (openRet) {
-		case QMessageBox::Save: cout << "Save clicked" << endl; break;
-		case QMessageBox::Discard: cout << "Discard" << endl; break;
-		case QMessageBox::Cancel: cout << "Cancel clicked" << endl; break;
-		}
-	}
-}
-
-void IPACL::newFile() {
-	if (formSaved) {
-		// Create new blank widget
-	}
-	else {
-		QMessageBox askToSave;
-		askToSave.setWindowTitle("Save Form?");
-		askToSave.setIcon(QMessageBox::Information);
-		askToSave.setText("Do you want to save the changes to this document before closing?");
-		askToSave.setInformativeText("If you don't save, your changes will be lost.");
-		askToSave.setStandardButtons(QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
-		askToSave.setDefaultButton(QMessageBox::Save);
-		int newRet = askToSave.exec();
-
-		switch (newRet) {
-		case QMessageBox::Save: cout << "Save clicked" << endl; break;
-		case QMessageBox::Discard: cout << "Discard" << endl; break;
-		case QMessageBox::Cancel: cout << "Cancel clicked" << endl; break;
-		}
-	}
-}
-
-void IPACL::close() {
-	qApp->exit(0);
 }
