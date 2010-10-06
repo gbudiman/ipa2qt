@@ -185,7 +185,8 @@ void dw::open() {
 		switch (openRet) {
 		case QMessageBox::Save: save();
 								readFile(QFileDialog::getOpenFileName(this, tr("Open Form"), QDir::currentPath()));
-								formSaved = true;
+								//formSaved = true;
+								update();
 								break;
 		case QMessageBox::Discard: shapeContainer.clear();
 									update();
@@ -214,7 +215,9 @@ void dw::newFile() {
 
 		switch (newRet) {
 		case QMessageBox::Save: save();
+								shapeContainer.clear();
 								formSaved = true;
+								update();
 								break;
 		case QMessageBox::Discard: shapeContainer.clear();
 									update();
