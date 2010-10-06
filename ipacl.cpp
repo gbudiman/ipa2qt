@@ -30,6 +30,7 @@ IPACL::IPACL(QWidget *parent)
 	 */
 	QHBoxLayout* layout = new QHBoxLayout;
 	mousePosLabel = new QLabel(tr("(?, ?)"));
+	mousePosLabel->setMaximumHeight(12);
 
 	QGroupBox* mGroup = new QGroupBox();
 	QVBoxLayout* mbox = new QVBoxLayout;
@@ -50,6 +51,7 @@ IPACL::IPACL(QWidget *parent)
 	vbox->addWidget(radioCircle);
 	vbox->addWidget(radioSquare);
 	vbox->addWidget(radioTriangle);
+	shapeGroup->setMaximumHeight(120);
 	shapeGroup->setLayout(vbox);
 
 	radioCircle->setChecked(true);
@@ -71,6 +73,7 @@ IPACL::IPACL(QWidget *parent)
 	wbox->addWidget(radioRed);
 	wbox->addWidget(radioGreen);
 	wbox->addWidget(radioBlue);
+	colorGroup->setMaximumHeight(120);
 	colorGroup->setLayout(wbox);
 
 	radioRed->setChecked(true);
@@ -79,7 +82,9 @@ IPACL::IPACL(QWidget *parent)
 	mbox->addWidget(mousePosLabel);
 	mbox->addWidget(shapeGroup);
 	mbox->addWidget(colorGroup);
+	mGroup->setAlignment(Qt::AlignTop);
 	mGroup->setLayout(mbox);
+	layout->setAlignment(Qt::AlignTop);
 	layout->addWidget(mGroup);
 	widget->setLayout(layout);
 
@@ -109,22 +114,12 @@ IPACL::~IPACL()
 
 }
 
-void IPACL::draw(int x, int y) {
-	//cout << "Will draw at " << x << ", " << y << endl;
-}
-
 void IPACL::getMouseLocation(int x, int y) {
-	//cout << x << ", " << y << endl;
-	//stringstream s;
-	//s << x << ", " << y;
 	char s [50];
 	sprintf(s, "(%d, %d)", x, y);
 	QString qs(s);
 
 	mousePosLabel->setText(qs);
-}
-
-void IPACL::leaveEvent(QEvent* event) {
 }
 
 void IPACL::createActions() {

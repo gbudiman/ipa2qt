@@ -103,14 +103,12 @@ private slots:
 	void radioSetCircle();
 	void radioSetTriangle();
 	void getMouseLocation(int x, int y);
-	void draw(int x, int y);
 
 signals:
 	void shapeChanged(int s);
 
 protected:
 	//void paintEvent(QPaintEvent* event);
-	void leaveEvent(QEvent* event);
 
 private:
     // Ui::IPACLClass ui;
